@@ -5,6 +5,27 @@ body {
   max-width: 80em;
   min-height: 100vh;
   box-sizing: border-box;
-  margin: auto;
+  margin-left: auto;
+  margin-right: auto;
   padding: 1em;
+}
+
+header {
+  display: flex;
+  gap: 1em;
+  align-items: baseline;
+  width: 100%;
+}
+
+label {
+  display: flex;
+  margin-left: auto;
+}
+
+#selected-time, #any-time {
+  display: block;
+}
+
+em {
+  opacity: 0.8;
 }
