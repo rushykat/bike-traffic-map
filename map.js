@@ -50,24 +50,24 @@ function minutesSinceMidnight(date) {
 
 // helper function to filter trips by minute
 function filterByMinute(tripsByMinute, minute) {
-    if (minute === -1) {
-      // return all trips if no time is selected
-      return tripsByMinute.flat(); 
-    }
-
-    // Normalize min and max to minute range
-    let minMinute = (minute - 60 + 1440) % 1440;
-    let maxMinute = (minute + 60) % 1440;
-
-    // filter time range
-    if (minMinute > maxMinute) {
-      let beforeMidnight = tripsByMinute.slice(minMinute);
-      let afterMidnight = tripsByMinute.slice(0, maxMinute);
-      return beforeMidnight.concat(afterMidnight).flat();
-    } else {
-      return tripsByMinute.slice(minMinute, maxMinute).flat();
-    }
+  if (minute === -1) {
+    // return all trips if no time is selected
+    return tripsByMinute.flat();
   }
+
+  // Normalize min and max to minute range
+  let minMinute = (minute - 60 + 1440) % 1440;
+  let maxMinute = (minute + 60) % 1440;
+
+  // filter time range
+  if (minMinute > maxMinute) {
+    let beforeMidnight = tripsByMinute.slice(minMinute);
+    let afterMidnight = tripsByMinute.slice(0, maxMinute);
+    return beforeMidnight.concat(afterMidnight).flat();
+  } else {
+    return tripsByMinute.slice(minMinute, maxMinute).flat();
+  }
+}
 
 let departuresByMinute = Array.from({ length: 1440 }, () => []);
 let arrivalsByMinute = Array.from({ length: 1440 }, () => []);
@@ -159,6 +159,8 @@ map.on("load", async () => {
     .domain([0, d3.max(stations, (d) => d.totalTraffic)])
     .range([0, 25]);
 
+  let stationFlow = d3.scaleQuantize().domain([0, 1]).range([0, 0.5, 1]);
+
   const svg = d3.select("#map").select("svg");
   const circles = svg
     .selectAll("circle")
@@ -170,6 +172,9 @@ map.on("load", async () => {
     .attr("stroke", "white")
     .attr("stroke-width", 1)
     .attr("opacity", 0.6)
+    .style("--departure-ratio", (d) =>
+      stationFlow(d.departures / d.totalTraffic)
+    )
     .each(function (d) {
       d3.select(this)
         .append("title")
@@ -221,7 +226,10 @@ map.on("load", async () => {
     circles
       .data(filteredStations, (d) => d.short_name)
       .join("circle")
-      .attr("r", (d) => radiusScale(d.totalTraffic));
+      .attr("r", (d) => radiusScale(d.totalTraffic))
+      .style("--departure-ratio", (d) =>
+        stationFlow(d.departures / d.totalTraffic)
+      );
   }
 
   // update time label on slider change

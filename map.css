@@ -23,3 +23,42 @@ body {
   height: 100%;
   pointer-events: auto;
 }
+
+#map svg circle,
+.legend > div {
+  --color-departures: steelblue;
+  --color-arrivals: darkorange;
+  --color: color-mix(
+    in oklch,
+    var(--color-departures) calc(100% * var(--departure-ratio)),
+    var(--color-arrivals)
+  );
+}
+
+#map svg circle {
+  fill: var(--color);
+}
+
+.legend {
+  display: flex;
+  margin-block: 1em;
+  width: 100%;
+}
+
+.legend > div {
+  background: var(--color);
+  color: white;
+  flex: 1;
+  padding: 5px;
+  /* font-weight: bold; */
+  font-weight: 650;
+}
+.legend > div:first-child {
+  text-align: left;
+}
+.legend > div:nth-child(2) {
+  text-align: center;
+}
+.legend > div:last-child {
+  text-align: right;
+}
